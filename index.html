@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <style>
+        body {margin:0}
+    </style>
+
+    <script type="importmap">
+        {
+          "imports": {
+            "three": "https://unpkg.com/three@0.160.1/build/three.module.js",
+            "three/addons": "https://unpkg.com/three@0.147.0/examples/jsm/controls/PointerLockControls.js"
+          }
+        }
+      </script>
+    
+    <script type = "module">
+        import * as THREE from 'three';
+        import {PointerLockControls} from 'three/addons';
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+
+        const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+        const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+        const cube = new THREE.Mesh( geometry, material );
+        scene.add( cube );
+
+        camera.position.z = 5;
+
+
+        let player = {
+            speed: 0.1
+        }
+
+
+
+
+        let keys = {};
+    document.addEventListener("keydown", (e) => {
+        keys[e.key] = true;
+    })
+    document.addEventListener("keyup", (e) => {
+        delete keys[e.key];
+    })
+    function movement() {
+        if (keys['w']) {
+            camera.translateZ(-player.speed);
+        }
+    }
+
+    // render scene
+    function animate() {
+	    requestAnimationFrame( animate );
+        movement();
+	    renderer.render( scene, camera );
+    }
+
+    // start function, interaction needed to lock pointer
+    window.start = function() {
+        document.body.replaceChildren();
+        document.body.appendChild( renderer.domElement );
+        const controls = new PointerLockControls( camera, document.body );
+        controls.lock();
+        animate();
+    }
+
+    </script>
+
+    <body>
+        <button onclick = "start()" style = "padding:10vh 10vw;">start</button>
+    </body>
+</html>
