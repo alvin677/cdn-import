@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <style>
+        body {margin:0}
+    </style>
+
+    <script type="importmap">
+        {
+          "imports": {
+            "three": "https://unpkg.com/three@0.160.1/build/three.module.js",
+            "three/addons": "https://unpkg.com/three@0.147.0/examples/jsm/controls/PointerLockControls.js"
+          }
+        }
+    </script>
+    
+    <script type = "module">
+        import * as THREE from 'three';
+        import {PointerLockControls} from 'three/addons';
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+
+        /*const textureLoader = new THREE.TextureLoader();
+        const texture = textureLoader.load('./grass.jpg')
+        const material = new THREE.MeshStandardMaterial( { map: texture } );*/
+
+        camera.position.z = 5;
+
+        function lazy(from, to){
+        for (let i = from; i < to; i++) {
+            for (let j = from; j < to; j++) {
+                for (let k = from; k < to; k++) {
+                    const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+                    const material = new THREE.MeshBasicMaterial( { color: new THREE.Color(1/j, 1/j, 1/k) } );
+                    const voxel = new THREE.Mesh( geometry, material );
+                    voxel.position.set(i, k, j);
+                    scene.add( voxel );
+                    
+                }
+            }
+        }
+    }
+
+        for (let i = 0; i < 100; i+=10) {
+            setTimeout(function() {lazy(i, i+10)}, 100*i);
+        }
+        console.log(scene.children);
+
+        const player = {
+            speed: 0.1
+        }
+
+
+
+
+        let keys = {};
+    document.addEventListener("keydown", (e) => {
+        keys[e.key] = true;
+    })
+    document.addEventListener("keyup", (e) => {
+        delete keys[e.key];
+    })
+    function movement() {
+        if (keys['w']) {
+            camera.translateZ(-player.speed);
+        }
+        if (keys['s']) {
+            camera.translateZ(player.speed);
+        }
+        if (keys['a']) {
+            camera.translateX(-player.speed);
+        }
+        if (keys['d']) {
+            camera.translateX(player.speed);
+        }
+    }
+
+    // render scene
+    function animate() {
+	    requestAnimationFrame( animate );
+        movement();
+	    renderer.render( scene, camera );
+    }
+
+    // start function, interaction needed to lock pointer
+    /*window.start = function() {
+        document.body.replaceChildren();
+        document.body.appendChild( renderer.domElement );
+        const controls = new PointerLockControls( camera, document.body );
+        controls.lock();
+        animate();
+    }*/
+
+    const controls = new PointerLockControls( camera, document.body );
+    document.addEventListener("mousedown", (e) => {
+        controls.lock();
+    })
+
+    document.body.appendChild( renderer.domElement );
+    animate();
+
+    </script>
+
+    <body>
+    </body>
+</html>
